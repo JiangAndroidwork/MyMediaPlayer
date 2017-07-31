@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/bt_player_state"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/icon_bt_start"
+        android:layout_centerVertical="true"
+        />
+    <ImageView
+        android:layout_toRightOf="@id/bt_player_state"
+        android:id="@+id/bt_next"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/icon_bt_next"
+        android:layout_centerVertical="true"
+        />
+    <TextView
+
+        android:layout_gravity="center_vertical"
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="#fff"
+        android:layout_marginRight="5dp"
+        android:text="../.."
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/bt_screen" />
+    <SeekBar
+        android:layout_toRightOf="@id/bt_next"
+        android:layout_marginLeft="5dp"
+        android:layout_gravity="center_vertical"
+        android:id="@+id/seek_bar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/tv_time"
+        android:layout_marginRight="5dp"
+        android:layout_centerVertical="true"
+        />
+    <ImageView
+        android:layout_alignParentRight="true"
+        android:id="@+id/bt_screen"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/icon_fullscreen"
+        />
+</RelativeLayout>
