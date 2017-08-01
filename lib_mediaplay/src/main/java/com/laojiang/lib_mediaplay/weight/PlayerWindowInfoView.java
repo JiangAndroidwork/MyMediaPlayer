@@ -286,7 +286,7 @@ public class PlayerWindowInfoView extends RelativeLayout implements View.OnClick
             super.handleMessage(msg);
             String  speed = (String) msg.obj;
             tvInternetSpeed.setText(speed);
-            Log.i(TAG,"网速==="+speed);
+//            Log.i(TAG,"网速==="+speed);
         }
     };
     private int mediaplayerPercentage;
