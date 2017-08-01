@@ -83,7 +83,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     private NetWorkInfoStateListener listener;//网络信息回调接口
     private NetWorkBroadReceiver netWorkBroadReceiver;
     private IntentFilter intentFilter;
-
+    private  int code;
     public MediaPlayerView(@NonNull Context context) {
         super(context);
         init(context, null);
@@ -141,6 +141,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.MediaPlayerView, 0, 0);
         int anInt = a.getInt(R.styleable.MediaPlayerView_transitionScreentImage, R.drawable.icon_bt_previous);
         url = a.getString(R.styleable.MediaPlayerView_resourceUrl);
+
         a.recycle();
     }
 
@@ -277,8 +278,12 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     @Override
     public void prepared(MediaPlayer mediaPlayer) {
         Log.i("准备完成呢过了----", "完成了");
-         activity.registerReceiver(netWorkBroadReceiver,intentFilter);
+
         if (!videoResourceBean.isLocal()) {
+            activity.registerReceiver(netWorkBroadReceiver,intentFilter);
+            if (code==NetWorkBroadReceiver.MOBILE_NET){//只有移动网络
+                initOnlyMoblie();
+            }
             mediaControllerView.setInfoViewListener(playerWindowInfoView);
             playerWindowInfoView.setMediaPlayer();
             if (playerWindowInfoView.getVisibility() == GONE)
@@ -547,11 +552,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     @Override
     public void callBackInternetInfo(String msg, int code) {
         listener.callBackInternetInfo(msg,code);
-        if (code==NetWorkBroadReceiver.MOBILE_NET){//只有移动网络
-            initOnlyMoblie();
-
-        }
-
+        this.code = code;
     }
 
     /**
