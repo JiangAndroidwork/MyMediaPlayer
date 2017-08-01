@@ -25,7 +25,7 @@ allprojects {
         list.add(new VideoResourceBean("http://114.215.83.40/cloudfile/public/microclass/files201707130846575996/苏州园林_20170713084657860.mp4"));
         mediaPlayerView.setUrl(list);
 ```
-##说明：
+## 说明：
 VideoResourceBean是媒体基类，用于存放路径
 #### 监听事件：
 ##### 1,网络状态监听
