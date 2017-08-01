@@ -44,11 +44,14 @@ public class VideoResourceBean {
     /**
      * 构造方法
      * @param videoPath
-     * @param isLocal  是否是本地视频
      */
-    public VideoResourceBean(String videoPath, boolean isLocal) {
+    public VideoResourceBean(String videoPath) {
         this.videoPath = videoPath;
-        this.isLocal = isLocal;
+        if (videoPath.contains("http://")||videoPath.contains("https://")){
+            this.setLocal(false);
+        }else {
+            this.setLocal(true);
+        }
     }
 
     public VideoResourceBean(SurfaceHolder surfaceHolder, String videoPath) {

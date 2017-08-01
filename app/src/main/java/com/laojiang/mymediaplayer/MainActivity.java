@@ -24,14 +24,11 @@ public class MainActivity extends AppCompatActivity implements NetWorkInfoStateL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mediaPlayerView = (MediaPlayerView) findViewById(R.id.media_player);
         hindSystemUI();
         List<VideoResourceBean> list = new ArrayList<>();
-//        list.add("http://114.215.83.40/cloudfile/public/microclass/files201707130846575996/苏州园林_20170713084657860.mp4");
-//        list.add("http://114.215.83.40/cloudfile/public/microclass/files201707121530004016/哈哈_20170712153000150.mp4");
-        list.add(new VideoResourceBean("http://114.215.83.40/cloudfile/public/microclass/files201707121530004016/哈哈_20170712153000150.mp4",false));
-        list.add(new VideoResourceBean("http://114.215.83.40/cloudfile/public/microclass/files201707130846575996/苏州园林_20170713084657860.mp4",false));
-
-        mediaPlayerView = (MediaPlayerView) findViewById(R.id.media_player);
+        list.add(new VideoResourceBean("http://114.215.83.40/cloudfile/public/microclass/files201707121530004016/哈哈_20170712153000150.mp4"));
+        list.add(new VideoResourceBean("http://114.215.83.40/cloudfile/public/microclass/files201707130846575996/苏州园林_20170713084657860.mp4"));
         mediaPlayerView.setUrl(list);
         mediaPlayerView.setErrorListener(new PlayerErrorCallBack(){
             @Override
