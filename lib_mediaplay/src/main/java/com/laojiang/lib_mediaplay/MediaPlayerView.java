@@ -268,12 +268,17 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        if (MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
-            Log.i("是否运行----", "运行了");
-            pause();
+
+        try {
+            if (MediaPlayerManage.getInstance().getMediaPlayer()!=null&&MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
+                Log.i("是否运行----", "运行了");
+                pause();
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
 //        mediaPlayer.release();
-        if (timerPlayer != null) timerPlayer.cancel();
+        if (timerPlayer != null) {timerPlayer.cancel(); timerPlayer=null;}
         if (!videoResourceBean.isLocal()) playerWindowInfoView.unSetMediaPlayer();
     }
 
@@ -499,7 +504,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     }
 
     public void StartProgress() {
-        if (timerPlayer != null) timerPlayer.cancel();
+        if (timerPlayer != null) {timerPlayer.cancel();timerPlayer=null;}
         timerPlayer = new Timer();
         playerTask = new TimerTask() {
             @Override
@@ -525,14 +530,17 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
 
 
     public void onDestory() {
-//        Log.i(TAG, "生命周期onDestory===");
+        Log.i(TAG, "生命周期onDestory===");
+        if (timerPlayer != null) {
+            timerPlayer.cancel();
+            timerPlayer=null;
+        }
+        if (!videoResourceBean.isLocal()) playerWindowInfoView.unSetMediaPlayer();
         if (MediaPlayerManage.getInstance().getMediaPlayer() != null && MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
             MediaPlayerManage.getInstance().getMediaPlayer().stop();
             MediaPlayerManage.getInstance().getMediaPlayer().release();
         }
-        if (timerPlayer != null)
-            timerPlayer.cancel();
-        if (!videoResourceBean.isLocal()) playerWindowInfoView.unSetMediaPlayer();
+
     }
 
     public void onResume() {
@@ -594,7 +602,6 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
             //设置全屏
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-
         //获取MediaPlayer的宽高
         int videoWidth = mediaPlayer.getVideoWidth();
         int videoHeight = mediaPlayer.getVideoHeight();

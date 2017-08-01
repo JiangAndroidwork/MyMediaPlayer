@@ -344,7 +344,7 @@ public class PlayerWindowInfoView extends RelativeLayout implements View.OnClick
         }
 
         tvShowPercentage.setText(getLoadingPercentage()+"%");
-        Log.i(TAG,"已经缓冲的大小=="+i+"\n"+"视频播放的百分比=="+v+"\n"+"设置的缓冲百分比=="+7);
+//        Log.i(TAG,"已经缓冲的大小=="+i+"\n"+"视频播放的百分比=="+v+"\n"+"设置的缓冲百分比=="+7);
         initShowOrHind();
     }
     //运行状态
