@@ -84,6 +84,9 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     private NetWorkBroadReceiver netWorkBroadReceiver;
     private IntentFilter intentFilter;
     private  int code;
+    private int widthSize;
+    private int heightSize;
+
     public MediaPlayerView(@NonNull Context context) {
         super(context);
         init(context, null);
@@ -343,7 +346,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         PlayerContent.IS_SCROLL_SEEKBAR = true;
-        Log.i("进度条开始拖拽===", "开始");
+//        Log.i("进度条开始拖拽===", "开始");
         if (!videoResourceBean.isLocal()) {
             playerWindowInfoView.setMediaPlayer();
         }
@@ -353,7 +356,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     public void onStopTrackingTouch(SeekBar seekBar) {
         MediaPlayerManage.getInstance().getMediaPlayer().seekTo(seekBar.getProgress());
         PlayerContent.IS_SCROLL_SEEKBAR = false;
-        Log.i("进度条停止拖拽监听===", "停止");
+//        Log.i("进度条停止拖拽监听===", "停止");
 
     }
 
@@ -443,7 +446,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         } else if (list.size() <= 0) {
             Toast.makeText(activity, activity.getString(R.string.request_add_video), Toast.LENGTH_SHORT).show();
         }
-        Log.i("下一个视频====", "点击响应");
+//        Log.i("下一个视频====", "点击响应");
 
     }
 
@@ -477,7 +480,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
             @Override
             public void onAnimationEnd(Animator animation) {
                 PlayerContent.COTROLLER_LAYOUT_STATE = 1;
-                Log.i("状态条是否拖动===", PlayerContent.IS_SCROLL_SEEKBAR + "");
+//                Log.i("状态条是否拖动===", PlayerContent.IS_SCROLL_SEEKBAR + "");
             }
         });
     }
@@ -522,7 +525,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
 
 
     public void onDestory() {
-        Log.i(TAG, "生命周期onDestory===");
+//        Log.i(TAG, "生命周期onDestory===");
         if (MediaPlayerManage.getInstance().getMediaPlayer() != null && MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
             MediaPlayerManage.getInstance().getMediaPlayer().stop();
             MediaPlayerManage.getInstance().getMediaPlayer().release();
@@ -591,31 +594,33 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
             //设置全屏
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-//            rl_paramters.width = (int) screen_widthPixels;
-//            rl_paramters.height = (int) screen_heightPixels;
 
         //获取MediaPlayer的宽高
         int videoWidth = mediaPlayer.getVideoWidth();
         int videoHeight = mediaPlayer.getVideoHeight();
-        Log.i(TAG, "视频宽和高==" + videoWidth + "---" + videoHeight);
-        float video_por = videoWidth / videoHeight;
-        float screen_por = screen_widthPixels / screen_heightPixels;
-        //16:9    16:12
-
-        layout_surface.height = (int) ((screen_widthPixels * videoHeight) / videoWidth);
-        layout_surface.width = LayoutParams.MATCH_PARENT;
+//        Log.i(TAG, "视频宽和高==" + videoWidth + "---" + videoHeight);
+        layout_surface.height =  ((widthSize * videoHeight) / videoWidth)<heightSize?((widthSize * videoHeight) / videoWidth):heightSize;
+        layout_surface.width = widthSize;//LayoutParams.MATCH_PARENT;
 
         if (videoHeight > videoWidth) {
             layout_surface.height = LayoutParams.MATCH_PARENT;
             layout_surface.width = LayoutParams.MATCH_PARENT;
         }
         layout_surface.gravity = Gravity.CENTER;
-        rl_paramters.width = LayoutParams.MATCH_PARENT;//getResources().getDisplayMetrics().widthPixels 留出了虚拟按键的高度，而LayoutParams.MATCH_PARENT包含了虚拟按键的高度，填充整个屏幕
-        rl_paramters.height = LayoutParams.MATCH_PARENT;
+        rl_paramters.width = widthSize;//LayoutParams.MATCH_PARENT;//getResources().getDisplayMetrics().widthPixels 留出了虚拟按键的高度，而LayoutParams.MATCH_PARENT包含了虚拟按键的高度，填充整个屏幕
+        rl_paramters.height =  heightSize;//LayoutParams.MATCH_PARENT;
+
 
         this.setLayoutParams(rl_paramters);
         surfaceView.setLayoutParams(layout_surface);
     }
 
-
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        heightSize = MeasureSpec.getSize(heightMeasureSpec);
+    }
 }
