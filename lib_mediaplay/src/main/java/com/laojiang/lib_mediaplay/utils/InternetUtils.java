@@ -13,7 +13,7 @@ import android.net.TrafficStats;
 public class InternetUtils {
 
     /**
-     * 获取网速
+     * 获取流量
      * @param context
      * @return
      */

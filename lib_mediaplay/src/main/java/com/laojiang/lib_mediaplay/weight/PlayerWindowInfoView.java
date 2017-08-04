@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -167,7 +166,6 @@ public class PlayerWindowInfoView extends RelativeLayout implements View.OnClick
         }
     }
     public void showStartIcon(){
-        Log.i("执行到这了==","haode--");
         ivPlayer.setImageResource(R.drawable.icon_bt_start);
         if (MediaPlayerManage.getInstance().getMediaPlayer()!=null){
             if (this.getVisibility()==GONE) this.setVisibility(VISIBLE);
@@ -321,19 +319,6 @@ public class PlayerWindowInfoView extends RelativeLayout implements View.OnClick
         }else if (PlayerContent.PLAY_STATE==0){
             initPlaying();
         }
-
-//        if (i==100&&PlayerContent.PLAY_STATE==0){
-//            infoCallBack.playingState();
-//            playState = PLAYING_STATE;
-//            if (this.getVisibility()==VISIBLE) this.setVisibility(GONE);
-//        }else if (i==100&&PlayerContent.PLAY_STATE==1){
-//            infoCallBack.pauseState();
-//            playState =PAUSE_STATE;
-//            if (ivPlayer.getVisibility()==GONE) ivPlayer.setVisibility(VISIBLE);
-//            ivPlayer.setImageResource(R.drawable.icon_bt_start);
-//            if (tvShowPercentage.getVisibility()==VISIBLE) tvShowPercentage.setVisibility(GONE);
-//            if (progressBar.getVisibility()==VISIBLE) progressBar.setVisibility(GONE);
-//        }
         float v =  (currentPosition / videoLength);
         percentageOfLoading = (int) ((100*y)/setLoadingValue);
 

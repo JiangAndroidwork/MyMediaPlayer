@@ -156,7 +156,6 @@ public class MediaControllerView extends RelativeLayout implements View.OnClickL
 
     private void initPuase() {
         controlListener.pause();
-
         if (windowInfoView.playerType.equals(PlayerWindowInfoView.PLAYING_STATE)
                 |windowInfoView.playerType.equals(PlayerWindowInfoView.LOADING_STATE)) {
             windowInfoView.showStartIcon();}

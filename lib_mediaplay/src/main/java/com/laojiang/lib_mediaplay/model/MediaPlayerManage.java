@@ -281,4 +281,8 @@ public class MediaPlayerManage  implements PlayerControlListener, MediaPlayer.On
     public void onCompletion(MediaPlayer mediaPlayer) {
         preparedListener.complete(mediaPlayer);
     }
+
+    public void setMediaplayerDestory() {
+        if (mediaPlayer!=null) mediaPlayer =null;
+    }
 }

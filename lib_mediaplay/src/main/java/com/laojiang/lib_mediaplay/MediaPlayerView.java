@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 /**
  * 类介绍（必填）：播放视频主view
@@ -83,9 +85,10 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     private NetWorkInfoStateListener listener;//网络信息回调接口
     private NetWorkBroadReceiver netWorkBroadReceiver;
     private IntentFilter intentFilter;
-    private  int code;
+    private double code;
     private int widthSize;
     private int heightSize;
+    private boolean isAlreadyRegister;//判断是否已经注册
 
     public MediaPlayerView(@NonNull Context context) {
         super(context);
@@ -144,7 +147,6 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.MediaPlayerView, 0, 0);
         int anInt = a.getInt(R.styleable.MediaPlayerView_transitionScreentImage, R.drawable.icon_bt_previous);
         url = a.getString(R.styleable.MediaPlayerView_resourceUrl);
-
         a.recycle();
     }
 
@@ -179,7 +181,6 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         ivBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                onDestory();
                 activity.finish();
             }
         });
@@ -218,9 +219,6 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     };
 
 
-
-
-
     /***
      * 核心 代码  surfaceCreated home返回手机桌面 再进入应用会调用。。
      * @param surfaceHolder
@@ -245,6 +243,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
                 MediaPlayerManage.getInstance().getMediaPlayer().seekTo(MediaPlayerManage.getInstance().getCurrentMediaplayerPositiono() - 3);
             start();
             StartProgress();
+
             if (!videoResourceBean.isLocal()) playerWindowInfoView.setMediaPlayer();
         }
     }
@@ -268,17 +267,12 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-        try {
-            if (MediaPlayerManage.getInstance().getMediaPlayer()!=null&&MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
-                Log.i("是否运行----", "运行了");
-                pause();
-            }
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+        if (MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
+            Log.i("是否运行----", "运行了");
+            pause();
         }
 //        mediaPlayer.release();
-        if (timerPlayer != null) {timerPlayer.cancel(); timerPlayer=null;}
+        if (timerPlayer != null) timerPlayer.cancel();
         if (!videoResourceBean.isLocal()) playerWindowInfoView.unSetMediaPlayer();
     }
 
@@ -288,11 +282,12 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         Log.i("准备完成呢过了----", "完成了");
 
         if (!videoResourceBean.isLocal()) {
-            activity.registerReceiver(netWorkBroadReceiver,intentFilter);
-            if (code==NetWorkBroadReceiver.MOBILE_NET){//只有移动网络
-                initOnlyMoblie();
-            }
+            activity.registerReceiver(netWorkBroadReceiver, intentFilter);
             mediaControllerView.setInfoViewListener(playerWindowInfoView);
+            if (code == NetWorkBroadReceiver.MOBILE_NET) {//只有移动网络
+                initOnlyMoblie();
+
+            }
             playerWindowInfoView.setMediaPlayer();
             if (playerWindowInfoView.getVisibility() == GONE)
                 playerWindowInfoView.setVisibility(VISIBLE);
@@ -316,10 +311,12 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     public void complete(MediaPlayer mediaPlayer) {
         Log.i("完成了====", "是的=");
 
-        next(null);
+
         if (MediaPlayerManage.getInstance().getMediaPlayer() != null && currentVideoPosition == list.size() - 1) {//最后一个视频
             MediaPlayerManage.getInstance().getMediaPlayer().seekTo(0);
             pause();
+        }else {
+            next(null);
         }
 //        next(null);
 
@@ -351,7 +348,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         PlayerContent.IS_SCROLL_SEEKBAR = true;
-//        Log.i("进度条开始拖拽===", "开始");
+        Log.i("进度条开始拖拽===", "开始");
         if (!videoResourceBean.isLocal()) {
             playerWindowInfoView.setMediaPlayer();
         }
@@ -361,7 +358,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     public void onStopTrackingTouch(SeekBar seekBar) {
         MediaPlayerManage.getInstance().getMediaPlayer().seekTo(seekBar.getProgress());
         PlayerContent.IS_SCROLL_SEEKBAR = false;
-//        Log.i("进度条停止拖拽监听===", "停止");
+        Log.i("进度条停止拖拽监听===", "停止");
 
     }
 
@@ -451,7 +448,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         } else if (list.size() <= 0) {
             Toast.makeText(activity, activity.getString(R.string.request_add_video), Toast.LENGTH_SHORT).show();
         }
-//        Log.i("下一个视频====", "点击响应");
+        Log.i("下一个视频====", "点击响应");
 
     }
 
@@ -485,7 +482,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
             @Override
             public void onAnimationEnd(Animator animation) {
                 PlayerContent.COTROLLER_LAYOUT_STATE = 1;
-//                Log.i("状态条是否拖动===", PlayerContent.IS_SCROLL_SEEKBAR + "");
+                Log.i("状态条是否拖动===", PlayerContent.IS_SCROLL_SEEKBAR + "");
             }
         });
     }
@@ -504,7 +501,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     }
 
     public void StartProgress() {
-        if (timerPlayer != null) {timerPlayer.cancel();timerPlayer=null;}
+        if (timerPlayer != null) timerPlayer.cancel();
         timerPlayer = new Timer();
         playerTask = new TimerTask() {
             @Override
@@ -527,55 +524,76 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
     }
 
 
-
-
     public void onDestory() {
         Log.i(TAG, "生命周期onDestory===");
-        if (timerPlayer != null) {
-            timerPlayer.cancel();
-            timerPlayer=null;
-        }
-        if (!videoResourceBean.isLocal()) playerWindowInfoView.unSetMediaPlayer();
         if (MediaPlayerManage.getInstance().getMediaPlayer() != null && MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
             MediaPlayerManage.getInstance().getMediaPlayer().stop();
             MediaPlayerManage.getInstance().getMediaPlayer().release();
         }
-
+        if (MediaPlayerManage.getInstance().getMediaPlayer() != null ){
+            MediaPlayerManage.getInstance().setMediaplayerDestory();
+        }
+        if (timerPlayer != null)
+            timerPlayer.cancel();
+        if (!videoResourceBean.isLocal()) playerWindowInfoView.unSetMediaPlayer();
     }
 
     public void onResume() {
-        if (netWorkBroadReceiver==null) {
-            netWorkBroadReceiver = new NetWorkBroadReceiver();
+        if (netWorkBroadReceiver == null) {
+            netWorkBroadReceiver = new NetWorkBroadReceiver(); //网络 广播接受者监听
         }
         netWorkBroadReceiver.setNetWorkBroadListener(this);
         intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 
     }
-    public void onPause(){
-        activity.unregisterReceiver(netWorkBroadReceiver);
+
+    public void onPause() {
+        if (isAlreadyRegister) {
+            activity.unregisterReceiver(netWorkBroadReceiver);
+            isAlreadyRegister=false;
+        }
     }
+
     /**
-     *  网络状态监听回调
+     * 网络状态监听回调
+     *
      * @param msg
      * @param code
      */
     @Override
     public void callBackInternetInfo(String msg, int code) {
-        listener.callBackInternetInfo(msg,code);
+        isAlreadyRegister = true;
         this.code = code;
+        listener.callBackInternetInfo(msg, code);
+
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (MediaPlayerManage.getInstance().getMediaPlayer() != null && MediaPlayerManage.getInstance().getMediaPlayer().isPlaying()) {
+                MediaPlayerManage.getInstance().getMediaPlayer().stop();
+                MediaPlayerManage.getInstance().getMediaPlayer().release();
+            }
+            if (timerPlayer != null)
+                timerPlayer.cancel();
+            if (!videoResourceBean.isLocal()) playerWindowInfoView.unSetMediaPlayer();
+        }
+        return true;
     }
 
     /**
      * 当只有移动网络的时候
      */
     private void initOnlyMoblie() {
-            if (playerWindowInfoView.playerType.equals(PlayerWindowInfoView.PLAYING_STATE)
-                    | playerWindowInfoView.playerType.equals(PlayerWindowInfoView.LOADING_STATE)) {
-                playerWindowInfoView.showStartIcon();
-            }
-            playerWindowInfoView.unSetMediaPlayer();
-            pause();
+        if (playerWindowInfoView.playerType.equals(PlayerWindowInfoView.PLAYING_STATE)
+                | playerWindowInfoView.playerType.equals(PlayerWindowInfoView.LOADING_STATE)) {
+            playerWindowInfoView.showStartIcon();
+        }
+        playerWindowInfoView.unSetMediaPlayer();
+        pause();
         PlayerContent.PLAY_STATE = 1;
         PlayerContent.IS_BUTTON_START = false;
         mediaControllerView.getBtPlayerState().setImageResource(R.drawable.icon_bt_start);
@@ -606,7 +624,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         int videoWidth = mediaPlayer.getVideoWidth();
         int videoHeight = mediaPlayer.getVideoHeight();
 //        Log.i(TAG, "视频宽和高==" + videoWidth + "---" + videoHeight);
-        layout_surface.height =  ((widthSize * videoHeight) / videoWidth)<heightSize?((widthSize * videoHeight) / videoWidth):heightSize;
+        layout_surface.height = ((widthSize * videoHeight) / videoWidth) < heightSize ? ((widthSize * videoHeight) / videoWidth) : heightSize;
         layout_surface.width = widthSize;//LayoutParams.MATCH_PARENT;
 
         if (videoHeight > videoWidth) {
@@ -615,7 +633,7 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         }
         layout_surface.gravity = Gravity.CENTER;
         rl_paramters.width = widthSize;//LayoutParams.MATCH_PARENT;//getResources().getDisplayMetrics().widthPixels 留出了虚拟按键的高度，而LayoutParams.MATCH_PARENT包含了虚拟按键的高度，填充整个屏幕
-        rl_paramters.height =  heightSize;//LayoutParams.MATCH_PARENT;
+        rl_paramters.height = heightSize;//LayoutParams.MATCH_PARENT;
 
 
         this.setLayoutParams(rl_paramters);
@@ -630,4 +648,5 @@ public class MediaPlayerView extends FrameLayout implements SurfaceHolder.Callba
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         heightSize = MeasureSpec.getSize(heightMeasureSpec);
     }
+
 }
