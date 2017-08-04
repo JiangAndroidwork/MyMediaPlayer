@@ -13,7 +13,7 @@ allprojects {
 ```
 ### 在moudle 中build.gradle中添加依赖：
 ```
-compile 'com.github.JiangAndroidwork:MyMediaPlayer:1.0'
+compile 'com.github.JiangAndroidwork:MyMediaPlayer:1.1'
 ```
 ### 2，调用方法：
 #### （1） 在xml中使用控件 com.laojiang.lib_mediaplay.MediaPlayerView
